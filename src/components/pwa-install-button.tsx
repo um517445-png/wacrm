@@ -131,35 +131,50 @@ export function PWAInstallButton() {
                 </ol>
               </div>
             ) : isAndroid ? (
-              <div className="space-y-3 rounded-xl bg-emerald-500/10 p-4 border border-emerald-500/30">
-                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">🤖 خيارات التثبيت المزدوج للأندرويد:</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  يمكنك تنزيل ملف الـ <strong>vorder-v1.0.apk</strong> المباشر الموقّع، أو تثبيت التطبيق بنقرة واحدة كـ WebApp مستقل.
-                </p>
-                <div className="flex flex-col gap-2 pt-1">
-                  <a
-                    href="/downloads/vorder-v1.0.apk"
-                    download="vorder-v1.0.apk"
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-md transition-all"
-                  >
-                    <Download className="size-4" />
-                    <span>تنزيل وتثبيت ملف APK المباشر (vorder-v1.0.apk)</span>
-                  </a>
-                  {deferredPrompt && (
-                    <Button
-                      onClick={async () => {
+              <div className="space-y-3 rounded-xl bg-indigo-500/10 p-4 border border-indigo-500/30">
+                <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400">⚡ دليل التثبيت الفوري المضمون للأندرويد:</p>
+                <ol className="space-y-2 text-xs text-muted-foreground">
+                  <li className="flex items-center justify-end gap-2">
+                    <span>1. اضغط على زر "تثبيت التطبيق الفوري للأندرويد ⚡" أدناه.</span>
+                    <Smartphone className="size-4 text-indigo-500 shrink-0" />
+                  </li>
+                  <li className="flex items-center justify-end gap-2">
+                    <span>2. اختر "تثبيت" في نافذة الأندرويد المباشرة التي تظهر.</span>
+                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+                  </li>
+                  <li className="flex items-center justify-end gap-2">
+                    <span>3. سيتم إضافة تطبيق Vorder بـ لوجو المنصة على الشاشة الرئيسية فوراً.</span>
+                    <PlusSquare className="size-4 text-primary shrink-0" />
+                  </li>
+                </ol>
+
+                <div className="flex flex-col gap-2 pt-2">
+                  <Button
+                    onClick={async () => {
+                      if (deferredPrompt) {
                         deferredPrompt.prompt();
                         const { outcome } = await deferredPrompt.userChoice;
                         if (outcome === 'accepted') setIsInstalled(true);
                         setDeferredPrompt(null);
                         setShowModal(false);
-                      }}
-                      className="w-full gap-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold text-xs"
-                    >
-                      <Smartphone className="size-4" />
-                      <span>تثبيت فورى بنقرة واحدة (Instant App Install)</span>
-                    </Button>
-                  )}
+                      } else {
+                        alert('تطبيق Vorder جاهز للتثبيت! يرجى اختيار "تثبيت التطبيق" أو "إضافة للشاشة الرئيسية" من قائمة المتصفح العلوي ⋮');
+                      }
+                    }}
+                    className="w-full gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 shadow-md font-bold text-xs py-2.5"
+                  >
+                    <Smartphone className="size-4 animate-bounce" />
+                    <span>تثبيت التطبيق الفوري للأندرويد ⚡</span>
+                  </Button>
+
+                  <a
+                    href="/downloads/vorder-v1.0.apk"
+                    download="vorder-v1.0.apk"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-muted/60 hover:bg-muted px-4 py-2 text-[11px] font-semibold text-muted-foreground border border-border transition-all mt-1"
+                  >
+                    <Download className="size-3.5" />
+                    <span>تنزيل ملف APK الاحتياطي (vorder-v1.0.apk)</span>
+                  </a>
                 </div>
               </div>
             ) : (
