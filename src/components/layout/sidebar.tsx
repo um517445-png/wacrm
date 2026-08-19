@@ -197,7 +197,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
         <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
           <Link href="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={logoUrl || "/vorder-logo.png"} alt="Vorder Logo" className="h-10 w-auto max-w-[195px] object-contain transition-all" />
+            <img src={logoUrl || "/vorder-logo.png"} alt="Vorder Logo" width={160} height={40} className="h-9 w-auto max-w-[170px] object-contain transition-all" />
           </Link>
           <button
             type="button"
