@@ -138,17 +138,35 @@ export function PWAInstallButton() {
               </div>
             ) : isAndroid ? (
               <div className="space-y-3 rounded-xl bg-emerald-500/10 p-4 border border-emerald-500/30">
-                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">🤖 جاري تنزيل ملف الـ APK المباشر:</p>
+                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">🤖 خيارات التثبيت المزدوج للأندرويد:</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  عند اكتمال تنزيل ملف <strong>vorder-v1.0.apk</strong>، اضغط على <strong>"فتح"</strong> ثم اختر <strong>"سماح بالتثبيت من هذا المصدر"</strong> لتركيب التطبيق مباشرة على هاتفك.
+                  يمكنك تنزيل ملف الـ <strong>vorder-v1.0.apk</strong> المباشر الموقّع، أو تثبيت التطبيق بنقرة واحدة كـ WebApp مستقل.
                 </p>
-                <a
-                  href="/api/download/android"
-                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-md"
-                >
-                  <Download className="size-4" />
-                  <span>إعادة تنزيل ملف APK الآن</span>
-                </a>
+                <div className="flex flex-col gap-2 pt-1">
+                  <a
+                    href="/downloads/vorder-v1.0.apk"
+                    download="vorder-v1.0.apk"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-md transition-all"
+                  >
+                    <Download className="size-4" />
+                    <span>تنزيل وتثبيت ملف APK المباشر (vorder-v1.0.apk)</span>
+                  </a>
+                  {deferredPrompt && (
+                    <Button
+                      onClick={async () => {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') setIsInstalled(true);
+                        setDeferredPrompt(null);
+                        setShowModal(false);
+                      }}
+                      className="w-full gap-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 font-bold text-xs"
+                    >
+                      <Smartphone className="size-4" />
+                      <span>تثبيت فورى بنقرة واحدة (Instant App Install)</span>
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="space-y-3 rounded-xl bg-muted/50 p-4 border border-border">
