@@ -19,6 +19,7 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
   const supabase = createClient();
   const currentLogo = logoUrl || "/vorder-logo.png";
 
@@ -82,8 +83,12 @@ export default function ResetPasswordPage() {
         throw updateError;
       }
 
+      await supabase.auth.signOut();
+      setIsSuccess(true);
       toast.success("تم تحديث كلمة المرور بنجاح!");
-      router.push("/dashboard");
+      setTimeout(() => {
+        router.push("/login?reset=success");
+      }, 2500);
     } catch (err: any) {
       setError(err.message || "فشل تحديث كلمة المرور");
       setLoading(false);
@@ -94,6 +99,34 @@ export default function ResetPasswordPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-md border-border bg-card shadow-lg dir-rtl text-center">
+          <CardHeader className="items-center text-center">
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+              <CheckCircle2 className="h-10 w-10" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-foreground">
+              تم إعادة تعيين كلمة المرور بنجاح! 🎉
+            </CardTitle>
+            <CardDescription className="text-muted-foreground mt-2">
+              تم حفظ كلمة المرور الجديدة لحسابك بنجاح. سيتم توجيهك إلى صفحة تسجيل الدخول خلال لحظات...
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button
+              onClick={() => router.push("/login?reset=success")}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl gap-2 cursor-pointer"
+            >
+              الانتقال لتسجيل الدخول الآن
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
