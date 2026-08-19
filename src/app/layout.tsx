@@ -31,19 +31,19 @@ export const metadata: Metadata = {
     template: "%s — Vorder",
   },
   description: "Vorder - Smart WhatsApp CRM Platform.",
-  manifest: "/manifest.webmanifest",
+  manifest: "/manifest.json",
   robots: {
     index: false,
     follow: false,
   },
   icons: {
     icon: [
+      { url: "/vorder-logo.png", type: "image/png", sizes: "512x512" },
       { url: "/favicon.ico", type: "image/x-icon" },
-      { url: "/vorder-logo.png", type: "image/png" },
     ],
     apple: [
+      { url: "/vorder-logo.png", sizes: "180x180", type: "image/png" },
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-      { url: "/vorder-logo.png", sizes: "512x512", type: "image/png" },
     ],
     shortcut: ["/vorder-logo.png"],
   },
