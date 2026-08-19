@@ -27,11 +27,23 @@ export async function GET(request: Request) {
         const rawToken = next.split("/join/")[1]?.split("?")[0]?.split("#")[0];
         if (rawToken) {
           try {
-            const tokenHash = hashInviteToken(decodeURIComponent(rawToken));
-            const { data: redeemData, error: redeemError } = await supabase.rpc(
+            const decodedToken = decodeURIComponent(rawToken);
+            const tokenHash = hashInviteToken(decodedToken);
+            
+            let { data: redeemData, error: redeemError } = await supabase.rpc(
               "redeem_invitation",
               { p_token_hash: tokenHash }
             );
+
+            if (redeemError || !redeemData) {
+              const retryRaw = await supabase.rpc("redeem_invitation", {
+                p_token_hash: decodedToken,
+              });
+              if (!retryRaw.error && retryRaw.data) {
+                redeemData = retryRaw.data;
+                redeemError = null;
+              }
+            }
 
             if (!redeemError && redeemData) {
               console.log("[Auth Callback Route] Server Auto-Redeem success:", redeemData);
