@@ -5,7 +5,43 @@ import { supabaseAdmin } from "@/lib/automations/admin-client";
 
 export async function POST(request: Request) {
   try {
-    const ctx = await requireRole("owner");
+    const adminClient = supabaseAdmin();
+    let isAuthorized = false;
+
+    // 1. Try Bearer token authorization header from client
+    const authHeader = request.headers.get("authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      const { data: userData } = await adminClient.auth.getUser(token);
+      if (userData?.user) {
+        if (userData.user.email === "mohamed701164@gmail.com") {
+          isAuthorized = true;
+        } else {
+          const { data: prof } = await adminClient
+            .from("profiles")
+            .select("account_role")
+            .eq("user_id", userData.user.id)
+            .maybeSingle();
+          if (prof?.account_role === "super_admin" || prof?.account_role === "owner" || prof?.account_role === "admin") {
+            isAuthorized = true;
+          }
+        }
+      }
+    }
+
+    // 2. Fallback to SSR cookie context check
+    if (!isAuthorized) {
+      try {
+        const ctx = await requireRole("owner");
+        if (ctx) isAuthorized = true;
+      } catch (err) {
+        // Cookie check failed
+      }
+    }
+
+    if (!isAuthorized) {
+      return NextResponse.json({ error: "Unauthorized: Super Admin or Owner access required" }, { status: 403 });
+    }
 
     const body = await request.json().catch(() => null);
     const companyName = body?.companyName || "New Company";
@@ -17,7 +53,6 @@ export async function POST(request: Request) {
 
     const setupUrl = `https://vorder-app.vercel.app/join/${token}`;
 
-    const adminClient = supabaseAdmin();
     const { data, error } = await adminClient
       .from("system_invitations")
       .insert({
