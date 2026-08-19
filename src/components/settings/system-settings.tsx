@@ -51,6 +51,7 @@ interface DealOption {
 export function SystemSettings() {
   const t = useTranslations('Settings.system');
   const { profile } = useAuth();
+  const supabase = createClient();
   const [loading, setLoading] = useState(true);
 
   const isSuperAdmin =
@@ -203,9 +204,15 @@ export function SystemSettings() {
     setAllowPublicSignup(checked);
 
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
       const res = await fetch('/api/settings/registration', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ allowPublicSignup: checked }),
       });
 
