@@ -8,8 +8,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "البريد الإلكتروني مطلوب" }, { status: 400 });
     }
 
-    const origin = request.nextUrl.origin;
-    const redirectTo = `${origin}/auth/callback?next=/reset-password`;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
+    const redirectTo = `${siteUrl}/auth/callback?next=/reset-password`;
 
     const supabase = await createClient();
 
