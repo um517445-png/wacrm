@@ -6,26 +6,28 @@ interface SendEmailParams {
   html: string;
 }
 
-const GMAIL_USER = process.env.GMAIL_USER || "mohamed701164@gmail.com";
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || "";
+export function getGmailCredentials() {
+  const user = process.env.GMAIL_USER || "mohamed701164@gmail.com";
+  const pass = (process.env.GMAIL_APP_PASSWORD || "qfwonfivwkzaituj").replace(/\s+/g, "");
+  return { user, pass };
+}
 
 export function createGmailTransporter() {
+  const { user, pass } = getGmailCredentials();
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: GMAIL_USER,
-      pass: GMAIL_APP_PASSWORD,
+      user,
+      pass,
     },
   });
 }
 
 export async function sendEmailViaGmail({ to, subject, html }: SendEmailParams) {
-  if (!GMAIL_APP_PASSWORD) {
-    console.warn("[Gmail Fallback] GMAIL_APP_PASSWORD is not set in environment.");
-  }
+  const { user } = getGmailCredentials();
   const transporter = createGmailTransporter();
   const info = await transporter.sendMail({
-    from: `"Vorder CRM" <${GMAIL_USER}>`,
+    from: `"Vorder CRM" <${user}>`,
     to,
     subject,
     html,
