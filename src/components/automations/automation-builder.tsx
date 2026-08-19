@@ -263,27 +263,31 @@ function ResourcesProvider({ children }: { children: ReactNode }) {
     // actually be sent (anything else 400s at send time), matching the
     // broadcast picker.
     void (async () => {
-      const [tagsRes, templatesRes, customFieldsRes, pipelinesRes, stagesRes] =
-        await Promise.all([
-          supabase.from("tags").select("*").order("name"),
-          supabase
-            .from("message_templates")
-            .select("*")
-            .eq("status", "APPROVED")
-            .order("name"),
-          supabase.from("custom_fields").select("*").order("field_name"),
-          supabase.from("pipelines").select("id, name").order("name"),
-          supabase
-            .from("pipeline_stages")
-            .select("id, name, pipeline_id, position")
-            .order("position"),
-        ])
-      if (cancelled) return
-      setTags((tagsRes.data as TagRecord[] | null) ?? [])
-      setTemplates((templatesRes.data as MessageTemplate[] | null) ?? [])
-      setCustomFields((customFieldsRes.data as CustomField[] | null) ?? [])
-      setPipelines((pipelinesRes.data as PipelineOption[] | null) ?? [])
-      setStages((stagesRes.data as PipelineStageOption[] | null) ?? [])
+      try {
+        const [tagsRes, templatesRes, customFieldsRes, pipelinesRes, stagesRes] =
+          await Promise.all([
+            supabase.from("tags").select("*").order("name"),
+            supabase
+              .from("message_templates")
+              .select("*")
+              .eq("status", "APPROVED")
+              .order("name"),
+            supabase.from("custom_fields").select("*").order("field_name"),
+            supabase.from("pipelines").select("id, name").order("name"),
+            supabase
+              .from("pipeline_stages")
+              .select("id, name, pipeline_id, position")
+              .order("position"),
+          ])
+        if (cancelled) return
+        setTags((tagsRes?.data as TagRecord[] | null) ?? [])
+        setTemplates((templatesRes?.data as MessageTemplate[] | null) ?? [])
+        setCustomFields((customFieldsRes?.data as CustomField[] | null) ?? [])
+        setPipelines((pipelinesRes?.data as PipelineOption[] | null) ?? [])
+        setStages((stagesRes?.data as PipelineStageOption[] | null) ?? [])
+      } catch {
+        // Fall back gracefully to empty arrays so builder canvas continues rendering
+      }
     })()
 
     // Members go through the API so we inherit its email-visibility
@@ -719,7 +723,7 @@ export function AutomationBuilder({ initial }: { initial: BuilderInitial }) {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background">
+    <div className="relative w-full min-h-[calc(100vh-5rem)] flex flex-col bg-background">
       {/* Top bar. At sub-sm widths the "Active" label is hidden and the
           switch moves to the right of the save button, so the name input
           gets maximum width. */}
