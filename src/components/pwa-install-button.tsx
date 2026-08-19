@@ -18,10 +18,10 @@ export function PWAInstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isIOS, setIsIOS] = useState(false);
-  const [showIOSModal, setShowIOSModal] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Check if running in standalone mode (already installed)
     if (typeof window !== 'undefined') {
       const isStandalone =
         window.matchMedia('(display-mode: standalone)').matches ||
@@ -30,12 +30,12 @@ export function PWAInstallButton() {
         setIsInstalled(true);
       }
 
-      // Check if iOS
       const userAgent = window.navigator.userAgent;
       const isIOSDevice = /iPhone|iPad|iPod/i.test(userAgent);
+      const isAndroidDevice = /Android/i.test(userAgent);
       setIsIOS(isIOSDevice);
+      setIsAndroid(isAndroidDevice);
 
-      // Listen for browser install prompt (Android & Desktop)
       const handleBeforeInstallPrompt = (e: Event) => {
         e.preventDefault();
         setDeferredPrompt(e);
@@ -43,7 +43,6 @@ export function PWAInstallButton() {
 
       window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-      // Listen for app installed event
       const handleAppInstalled = () => {
         setIsInstalled(true);
         setDeferredPrompt(null);
@@ -60,7 +59,14 @@ export function PWAInstallButton() {
 
   const handleInstallClick = async () => {
     if (isIOS) {
-      setShowIOSModal(true);
+      setShowModal(true);
+      return;
+    }
+
+    if (isAndroid) {
+      // Trigger direct APK download for Android users
+      window.location.href = '/api/download/android';
+      setShowModal(true);
       return;
     }
 
@@ -72,8 +78,7 @@ export function PWAInstallButton() {
       }
       setDeferredPrompt(null);
     } else {
-      // If no prompt event, show helpful modal (e.g. desktop instructions)
-      setShowIOSModal(true);
+      setShowModal(true);
     }
   };
 
@@ -99,12 +104,12 @@ export function PWAInstallButton() {
         <span className="inline sm:hidden">{t('installBtnShort')}</span>
       </Button>
 
-      {/* iOS & Browser Guidance Modal */}
-      <Dialog open={showIOSModal} onOpenChange={setShowIOSModal}>
+      {/* Guidance Modal */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-md bg-card border-border text-foreground">
           <DialogHeader className="text-right">
             <DialogTitle className="flex items-center justify-end gap-2 text-lg font-bold text-foreground">
-              <span>تثبيت Vorder على شاشتك</span>
+              <span>{isAndroid ? 'تنزيل تطبيق Vorder للأندرويد (APK)' : 'تثبيت تطبيق Vorder على شاشتك'}</span>
               <Smartphone className="size-5 text-primary" />
             </DialogTitle>
             <DialogDescription className="text-sm text-muted-foreground pt-1">
@@ -131,18 +136,32 @@ export function PWAInstallButton() {
                   </li>
                 </ol>
               </div>
+            ) : isAndroid ? (
+              <div className="space-y-3 rounded-xl bg-emerald-500/10 p-4 border border-emerald-500/30">
+                <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">🤖 جاري تنزيل ملف الـ APK المباشر:</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  عند اكتمال تنزيل ملف <strong>vorder-v1.0.apk</strong>، اضغط على <strong>"فتح"</strong> ثم اختر <strong>"سماح بالتثبيت من هذا المصدر"</strong> لتركيب التطبيق مباشرة على هاتفك.
+                </p>
+                <a
+                  href="/api/download/android"
+                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-md"
+                >
+                  <Download className="size-4" />
+                  <span>إعادة تنزيل ملف APK الآن</span>
+                </a>
+              </div>
             ) : (
               <div className="space-y-3 rounded-xl bg-muted/50 p-4 border border-border">
-                <p className="text-sm font-semibold text-foreground">تثبيت التطبيق على الكمبيوتر أو الأندرويد:</p>
+                <p className="text-sm font-semibold text-foreground">تثبيت التطبيق على الكمبيوتر (Windows / Linux):</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  من قائمة المتصفح العلوي <strong>⋮</strong> اضغط على <strong>"تثبيت Vorder"</strong> أو <strong>"إضافة إلى الشاشة الرئيسية"</strong> للوصول السريع بضغطة زر.
+                  من قائمة المتصفح العلوي <strong>⋮</strong> اضغط على <strong>"تثبيت Vorder"</strong> أو <strong>"إضافة إلى سطح المكتب"</strong> للوصول السريع بضغطة زر.
                 </p>
               </div>
             )}
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button variant="secondary" size="sm" onClick={() => setShowIOSModal(false)}>
+            <Button variant="secondary" size="sm" onClick={() => setShowModal(false)}>
               حسناً، فهمت
             </Button>
           </div>
