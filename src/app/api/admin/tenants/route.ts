@@ -107,8 +107,12 @@ export async function GET(req: NextRequest) {
       const ownerEmail = (ownerProfile?.email || "").trim().toLowerCase();
       const ownerName = ownerProfile?.full_name || acc.name || "مالك الشركة";
 
-      // Skip super admin account from tenants list
-      if (ownerEmail === "mohamed701164@gmail.com" || ownerProfile?.account_role === "super_admin") {
+      // Skip super admin account and any team members belonging to super admin account
+      if (
+        ownerEmail === "mohamed701164@gmail.com" ||
+        ownerProfile?.account_role === "super_admin" ||
+        ownerProfile?.account_id === superAdminAccountId
+      ) {
         continue;
       }
 
