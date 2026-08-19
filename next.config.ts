@@ -68,6 +68,15 @@ const nextConfig: NextConfig = {
   // Docker image can run without node_modules or the Next CLI.
   // Harmless outside Docker: `next start` keeps working as before.
   output: "standalone",
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'vorder.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
   env: {
     NEXT_PUBLIC_BUILD_TIME: String(Date.now()),
   },
