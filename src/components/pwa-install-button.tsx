@@ -63,13 +63,6 @@ export function PWAInstallButton() {
       return;
     }
 
-    if (isAndroid) {
-      // Trigger direct APK download for Android users
-      window.location.href = '/api/download/android';
-      setShowModal(true);
-      return;
-    }
-
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
@@ -77,9 +70,10 @@ export function PWAInstallButton() {
         setIsInstalled(true);
       }
       setDeferredPrompt(null);
-    } else {
-      setShowModal(true);
+      return;
     }
+
+    setShowModal(true);
   };
 
   if (isInstalled) {
