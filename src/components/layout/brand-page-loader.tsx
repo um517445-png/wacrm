@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+import { useBranding } from '@/hooks/use-branding';
 
 const WAITING_PHRASES = [
   'جاري تحضير مساحة عمل Vorder الفاخرة... 🔮',
@@ -11,7 +11,15 @@ const WAITING_PHRASES = [
 ];
 
 export function BrandPageLoader({ message }: { message?: string }) {
+  const { logoUrl } = useBranding();
   const [phraseIndex, setPhraseIndex] = useState(0);
+  const [imgSrc, setImgSrc] = useState<string>(logoUrl || '/vorder-logo.png');
+
+  useEffect(() => {
+    if (logoUrl) {
+      setImgSrc(logoUrl);
+    }
+  }, [logoUrl]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,15 +33,15 @@ export function BrandPageLoader({ message }: { message?: string }) {
       <div className="relative flex flex-col items-center justify-center gap-6 text-center">
         {/* Glow Ring Halo */}
         <div className="relative flex items-center justify-center">
-          <div className="absolute -inset-4 rounded-full bg-primary/20 blur-xl animate-pulse" />
-          <div className="relative flex h-28 w-28 items-center justify-center rounded-2xl bg-card border border-primary/20 shadow-2xl p-4 transition-transform hover:scale-105 duration-300">
-            <Image
-              src="/vorder-logo.png"
-              alt="Vorder"
+          <div className="absolute -inset-4 rounded-full bg-primary/25 blur-2xl animate-pulse" />
+          <div className="relative flex h-28 w-28 items-center justify-center rounded-2xl bg-card border border-primary/20 shadow-2xl p-4 transition-transform hover:scale-105 duration-300 overflow-hidden">
+            <img
+              src={imgSrc}
+              alt="Vorder Logo"
+              onError={() => setImgSrc('/icon-512.png')}
               width={90}
               height={90}
-              priority
-              className="object-contain animate-pulse"
+              className="h-full w-full object-contain animate-pulse"
             />
           </div>
         </div>
