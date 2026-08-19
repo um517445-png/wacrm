@@ -14,9 +14,21 @@ import type { AutomationStepType, AutomationTriggerType } from "@/types"
 // `useSearchParams` requires a Suspense boundary or the production build
 // bails to CSR and errors out. Thin wrapper supplies it; the inner
 // component reads the `?template=` query string.
+function BuilderSkeleton() {
+  return (
+    <div className="relative w-full min-h-[calc(100vh-5rem)] flex flex-col bg-background p-6">
+      <div className="h-12 w-full rounded-md bg-muted/60 animate-pulse mb-6" />
+      <div className="mx-auto w-full max-w-2xl flex flex-col items-center gap-4">
+        <div className="h-32 w-full rounded-xl bg-card border border-border animate-pulse" />
+        <div className="h-24 w-full rounded-xl bg-card border border-border animate-pulse" />
+      </div>
+    </div>
+  )
+}
+
 export default function NewAutomationPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<BuilderSkeleton />}>
       <NewAutomationPageInner />
     </Suspense>
   )
