@@ -29,8 +29,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const actionLink = linkData.properties.action_link;
-    await sendPasswordResetViaGmail(targetEmail, actionLink);
+    const hashedToken = linkData.properties.hashed_token;
+    const directActionLink = hashedToken
+      ? `${siteUrl}/auth/callback?token_hash=${hashedToken}&type=recovery&next=/reset-password`
+      : linkData.properties.action_link;
+
+    await sendPasswordResetViaGmail(targetEmail, directActionLink);
 
     return NextResponse.json({
       success: true,
