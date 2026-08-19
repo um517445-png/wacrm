@@ -38,14 +38,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/vorder-logo.png", type: "image/png", sizes: "512x512" },
-      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
+      { url: "/vorder-logo.png", sizes: "597x418", type: "image/png" },
     ],
     apple: [
-      { url: "/vorder-logo.png", sizes: "180x180", type: "image/png" },
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: ["/vorder-logo.png"],
+    shortcut: ["/favicon.ico"],
   },
   appleWebApp: {
     capable: true,
