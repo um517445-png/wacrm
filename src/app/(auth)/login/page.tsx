@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useBranding } from "@/hooks/use-branding";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   return (
@@ -40,9 +41,15 @@ function LoginPageInner() {
   const supabase = createClient();
   const currentLogo = logoUrl || "/vorder-logo.png";
 
+  const [resetSuccess, setResetSuccess] = useState(false);
+
   useEffect(() => {
     if (urlError === "invalid_link" || urlError === "auth_callback_failed") {
       setError("انتهت صلاحية رابط التوثيق أو لم يعد صالساً، يرجى محاولة الدخول أو طلب رابط جديد.");
+    }
+    if (typeof window !== "undefined" && window.location.search.includes("reset=success")) {
+      setResetSuccess(true);
+      toast.success("تم تغيير كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول.");
     }
   }, [urlError]);
 
